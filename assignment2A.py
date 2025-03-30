@@ -1,4 +1,7 @@
 import sys
+from collections import deque
+import functools
+import heapq
 
 def depthFirstSearch():
     return("Depth first search")
@@ -95,3 +98,153 @@ class Node:
     
     def __hash__(self):
         return hash(self.state)
+    
+class SimpleProblemSolvingAgentProgram:
+    def __init__(self, initial_state = None):
+        self.state = initial_state
+        self.seq = []
+
+    def __call__(self, percept):
+        self.state = self.update_state(self.state, percept)
+        if not self.seq:
+            goal = self.formulate_goal(self.state)
+            problem = self.formulate_problem(self.state, goal)
+            self.swq = self.search(problem)
+            if not self.seq:
+                return None
+            
+        return self.seq.pop(0)
+
+    def update_state(self, state, percept):
+        raise NotImplementedError
+        
+    def formulate_goal(self, state):
+        raise NotImplementedError
+        
+    def formulate_problem(self, state, goal):
+        raise NotImplementedError
+    
+class PriorityQueue:
+    def __init__(self, order='min', f=lambda x: x):
+        self.heap = []
+        if order == 'min':
+            self.f = f
+        elif order == 'max':  # now item with max f(x)
+            self.f = lambda x: -f(x)  # will be popped first
+        else:
+            raise ValueError("Order must be either 'min' or 'max'.")
+
+    def append(self, item):
+        """Insert item at its correct position."""
+        heapq.heappush(self.heap, (self.f(item), item))
+
+    def extend(self, items):
+        """Insert each item in items at its correct position."""
+        for item in items:
+            self.append(item)
+
+    def pop(self):
+        """Pop and return the item (with min or max f(x) value)
+        depending on the order."""
+        if self.heap:
+            return heapq.heappop(self.heap)[1]
+        else:
+            raise Exception('Trying to pop from empty PriorityQueue.')
+
+    def __len__(self):
+        """Return current capacity of PriorityQueue."""
+        return len(self.heap)
+
+    def __contains__(self, key):
+        """Return True if the key is in PriorityQueue."""
+        return any([item == key for _, item in self.heap])
+
+    def __getitem__(self, key):
+        """Returns the first value associated with key in PriorityQueue.
+        Raises KeyError if key is not present."""
+        for value, item in self.heap:
+            if item == key:
+                return value
+        raise KeyError(str(key) + " is not in the priority queue")
+
+    def __delitem__(self, key):
+        """Delete the first occurrence of key."""
+        try:
+            del self.heap[[item == key for _, item in self.heap].index(True)]
+        except ValueError:
+            raise KeyError(str(key) + " is not in the priority queue")
+        heapq.heapify(self.heap)
+    
+def memoize(fn, slot = None, maxsize = 32):
+    if slot:
+        def memoized_fn(obj, *args):
+            if hasattr(obj, slot):
+                return getattr(obj, slot)
+            else:
+                val = fn(obj, *args)
+                setattr(obj, slot, val)
+                return val
+    else:
+        @functools.lru_cache(maxsize = maxsize)
+        def memoized_fn(*args):
+            return fn(*args)
+        
+    return memoized_fn
+
+def breadth_first_tree_search(problem):
+    frontier = deque([Node(problem.initial)])#Frontier is FIFO queue
+
+    while frontier:
+        node = frontier.popleft()
+        
+        if problem.goal_test(node.state):
+            return node
+        frontier.extend(node.expand(problem))
+
+    return None
+
+def depth_first_tree_search(problem):
+    frontier = [Node(problem.initial)] #Stack
+
+    while frontier:
+        node = frontier.pop()
+
+        if problem.goal_test(node.state):
+            return node
+        frontier.extend(node.expand(problem))
+
+    return None
+
+def best_first_graph_search(problem, f, display = False):
+    #Specify h(x) = f(x) for greedy best first search
+    f = memoize(f, 'f')
+
+    node = Node(problem.initial)
+    frontier = PriorityQueue('min', f)
+    frontier.append(node)
+    explored = set()
+
+    while frontier:
+        node = frontier.pop()
+
+        if problem.goal_test(node.state):
+            if display:
+                print(len(explored), "paths have been expanded and", len(frontier), "paths remain in the frontier")
+            return node
+        
+        explored.add(node.state)
+
+        for child in node.expand(problem):
+            if child.state not in explored and child not in frontier:
+                frontier.append(child)
+            elif child in frontier:
+                if f(child) < frontier[child]:
+                    del frontier[child]
+                    frontier.append(child)
+
+    return None
+
+def astar_search(problem, h = None, display = False):
+    h = memoize(h or problem.h, 'h')
+
+    return best_first_graph_search(problem, lambda n: n.path_cost + h(n), display)
