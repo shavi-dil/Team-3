@@ -1,4 +1,5 @@
 import sys
+import Searches
 
 def depthFirstSearch():
     return("Depth first search")
