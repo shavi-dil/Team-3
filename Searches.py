@@ -1,6 +1,6 @@
+from collections import deque
 import functools
 import Node
-from collections import deque
 import PriorityQueue
 
 def memoize(fn, slot = None, maxsize = 32):
