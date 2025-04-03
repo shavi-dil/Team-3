@@ -26,7 +26,7 @@ def breadth_first_graph_search(problem):
     frontier = deque([node])
     explored = set()
     
-    while frontier():
+    while frontier:
         node = frontier.popleft()
         explored.add(node.state)
 
@@ -58,7 +58,7 @@ def best_first_graph_search(problem, f, display = False):
     f = memoize(f, 'f')
 
     node = Node(problem.initial)
-    frontier = PriorityQueue('min', f)
+    frontier = PriorityQueue.PriorityQueue('min', f)
     frontier.append(node)
     explored = set()
 
@@ -103,7 +103,7 @@ def depth_limited_search(problem, limit):
                     return result
             return 'cutoff' if cutoff_occurred else None
 
-    return recursive_dls(Node.Node(problem.initial), problem, limit)
+    return recursive_dls(Node(problem.initial), problem, limit)
 
 def iterative_deepening_search(problem):
     for depth in range(0, 1000):  # You can change max depth if needed
