@@ -1,7 +1,7 @@
 from collections import deque
 import functools
 from Node import Node 
-import PriorityQueue
+from PriorityQueue import PriorityQueue  
 
 def memoize(fn, slot = None, maxsize = 32):
     if slot:
@@ -26,7 +26,7 @@ def breadth_first_graph_search(problem):
     frontier = deque([node])
     explored = set()
     
-    while frontier():
+    while frontier:
         node = frontier.popleft()
         explored.add(node.state)
 

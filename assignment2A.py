@@ -27,6 +27,7 @@ def format_output(file_name, method, goal_node):
     path = goal_node.solution()
     steps = len(goal_node.path()) - 1
     goal = goal_node.state
+    cost = goal_node.path_cost 
     return f"{file_name} {method}\n{goal} {steps}\n{' -> '.join(map(str, path))}"
 
 def main():
