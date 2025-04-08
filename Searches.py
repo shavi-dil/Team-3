@@ -103,7 +103,7 @@ def depth_limited_search(problem, limit):
                     return result
             return 'cutoff' if cutoff_occurred else None
 
-    return recursive_dls(Node.Node(problem.initial), problem, limit)
+    return recursive_dls(Node(problem.initial), problem, limit)
 
 def iterative_deepening_search(problem):
     for depth in range(0, 1000):  # You can change max depth if needed
