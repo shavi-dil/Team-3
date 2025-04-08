@@ -27,7 +27,7 @@ def format_output(file_name, method, goal_node):
     path = goal_node.solution()
     steps = len(goal_node.path()) - 1
     goal = goal_node.state
-    return f"{file_name} {method}\n{goal} {steps}\n{' -> '.join(map(str, path))}"
+    return f"{file_name}\n{method}\n{goal} {steps}\n{' -> '.join(map(str, path))}"
 
 def main():
     if len(sys.argv) != 3:
