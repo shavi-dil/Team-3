@@ -25,7 +25,7 @@ class Node:
         return next_node
     
     def solution(self):
-        return [node.action for node in self.path()[1:]]
+        return [node.state for node in self.path()]
     
     def path(self):
         node, path_back = self, []
