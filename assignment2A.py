@@ -2,24 +2,6 @@ import sys
 from RouteFindingProblem import RouteFindingProblem
 import Searches
 
-def depthFirstSearch(problem):
-    return Searches.depth_first_graph_search(problem)
-
-def breadthFirstSearch(problem):
-    return Searches.breadth_first_graph_search(problem)
-
-def greedyBestFirstSearch(problem):
-    return Searches.best_first_graph_search(problem, problem.h)
-
-def aStarSearch(problem):
-    return Searches.astar_search(problem)
-
-def cus1(problem):
-    return Searches.iterative_deepening_search(problem)
-
-def cus2(problem):
-    return Searches.weighted_astar_search(problem, w=2.0)
-
 def format_output(file_name, method, goal_node):
     if goal_node is None:
         return f"{file_name} {method}\nNo path found"
@@ -42,22 +24,22 @@ def main():
     match method:
         case "dfs":
             longMethod = "Depth First Search"
-            result = depthFirstSearch(problem)
+            result = Searches.depth_first_graph_search(problem)
         case "bfs":
             longMethod = "Breadth First Search"
-            result = breadthFirstSearch(problem)
+            result = Searches.breadth_first_graph_search(problem)
         case "gbfs":
             longMethod = "Greedy Best First Search"
-            result = greedyBestFirstSearch(problem)
+            result = Searches.best_first_graph_search(problem, problem.h)
         case "as":
             longMethod = "A* Search"
-            result = aStarSearch(problem)
+            result = Searches.astar_search(problem)
         case "cus1":
             longMethod = "Iterative Deepening Search"
-            result = cus1(problem)
+            result = Searches.iterative_deepening_search(problem)
         case "cus2":
             longMethod = "Weighted A* Search"
-            result = cus2(problem)
+            result = Searches.weighted_astar_search(problem, w = 2.0)
         case _:
             print(f"Unknown method: {method}")
             return
