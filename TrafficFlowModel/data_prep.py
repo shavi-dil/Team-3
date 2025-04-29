@@ -16,4 +16,4 @@ def prepare_data(data):
     data_test = data.sample(n = 10000)
     data_test = data_test.reset_index(drop = True)
 
-    return data
+    return data, data_test
