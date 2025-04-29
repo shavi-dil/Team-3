@@ -3,12 +3,13 @@ import pandas as pd
 def are_equal(column):
     array = column.to_numpy()
 
-    return (array[0] == array).all()
+    return False#(array[0] == array).all()
 
 def prepare_data(data):
     #remove constant columns
     for column in data.columns:
         if are_equal(data[column]):
+            print("Removing ", data[column])
             del data[column]
 
     #Should also add a function to remove null values

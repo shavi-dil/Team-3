@@ -20,3 +20,11 @@ def select_features(data):
 
     sns.heatmap(dataHeat.corr(), cmap = 'Greens', annot = True)
     plt.show()#Not much correlation really
+
+    #Next, we need to find the amount of traffic per intersection, which I think will perform better
+    intersections = []#A list of each intersection
+    for intersection in data['SITE_DESC']:
+        intersections.append(data['SITE_DESC'].unique())
+
+    for intersection in intersections:
+        print(intersection)#Test
