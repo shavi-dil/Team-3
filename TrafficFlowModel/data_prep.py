@@ -14,11 +14,23 @@ def prepare_data(data):
             del data[column]
 
     #Should also add a function to remove null values
-    roads = data.LOCAL_ROAD.unique()
-    dic = dict((a, b) for a, b in enumerate(roads))
-    data['LOCAL_ROAD'] = data['LOCAL_ROAD'].map(dic)
+    count = 0
+    for row in data.itertuples():
+        if row.DECLARED_R is None or row.LOCAL_ROAD is None or row.DECLARED_R == 'Missing Data':
+            data = data.drop(count)
+        count += 1
 
-    x = data['LOCAL_ROAD']
+    #roads = data.LOCAL_ROAD.unique()
+    #dic = dict((a, b) for a, b in enumerate(roads))
+    #data['LOCAL_ROAD'] = data['LOCAL_ROAD'].map(dic)
+    #data['LOCAL_ROAD'] = data['LOCAL_ROAD'].factorize()[0]
+
+    #print(data['LOCAL_ROAD'])
+    lr = data[['LOCAL_ROAD', 'DECLARED_R']]
+    lr = pd.Categorical(lr)
+
+    #x = data[['LOCAL_ROAD', 'DECLARED_R']]
+    x = lr
     y = data['PER_TRUCKS']
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 1)
