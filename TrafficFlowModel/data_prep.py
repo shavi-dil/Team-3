@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 def are_equal(column):
     array = column.to_numpy()
@@ -13,8 +14,13 @@ def prepare_data(data):
             del data[column]
 
     #Should also add a function to remove null values
+    roads = data.LOCAL_ROAD.unique()
+    dic = dict((a, b) for a, b in enumerate(roads))
+    data['LOCAL_ROAD'] = data['LOCAL_ROAD'].map(dic)
 
-    data_test = data.sample(n = 10000)
-    data_test = data_test.reset_index(drop = True)
+    x = data['LOCAL_ROAD']
+    y = data['PER_TRUCKS']
 
-    return data, data_test
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 1)
+
+    return x_train, x_test, y_train, y_test
