@@ -20,17 +20,21 @@ def prepare_data(data):
             data = data.drop(count)
         count += 1
 
-    #roads = data.LOCAL_ROAD.unique()
-    #dic = dict((a, b) for a, b in enumerate(roads))
-    #data['LOCAL_ROAD'] = data['LOCAL_ROAD'].map(dic)
+    roads = data.LOCAL_ROAD.unique()
+    dic = dict((a, b) for a, b in enumerate(roads))
+    data['LOCAL_ROAD'] = data['LOCAL_ROAD'].map(dic)
     #data['LOCAL_ROAD'] = data['LOCAL_ROAD'].factorize()[0]
+    otherRoads = data.DECLARED_R.unique()
+    dic = dict((a, b) for a, b in enumerate(otherRoads))
+    data['DECLARED_R'] = data['DECLARED_R'].map(dic)
+    #data['DECLARED_R'] = data['DECLARED_R'].factorize()[0]
 
     #print(data['LOCAL_ROAD'])
-    lr = data[['LOCAL_ROAD', 'DECLARED_R']]
-    lr = pd.Categorical(lr)
+    #lr = data['LOCAL_ROAD']
+    #lr = pd.Categorical(lr)
 
-    #x = data[['LOCAL_ROAD', 'DECLARED_R']]
-    x = lr
+    x = data[['LOCAL_ROAD', 'DECLARED_R']]
+    #x = lr
     y = data['PER_TRUCKS']
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 1)
