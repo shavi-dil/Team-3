@@ -2,8 +2,10 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from keras import Sequential
 from torch import lstm
+from torch import gru
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from torch.nn import Sequential
 
 def train_lstm(x_train, x_test, y_train, y_test):
     scalar = MinMaxScaler(feature_range = (0, 1))
@@ -11,7 +13,7 @@ def train_lstm(x_train, x_test, y_train, y_test):
 
 def train_RandomForest(x_train, x_test, y_train, y_test):
     clf = RandomForestClassifier()
-    
+
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -22,3 +24,8 @@ def train_RandomForest(x_train, x_test, y_train, y_test):
     print(confusion_matrix(y_pred, y_test))
 
     print("Accuracy score: ", accuracy_score(y_test, y_pred))
+
+def train_gru():
+    model = Sequential()
+    model.add_module(gru())#Tutorial is saying theres' a return_sequences in there.
+                            #Need to have a look at that

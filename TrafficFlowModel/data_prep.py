@@ -1,12 +1,21 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from numpy import array
 
 def are_equal(column):
     array = column.to_numpy()
 
     return False#(array[0] == array).all()
 
-def prepare_data(data):
+def create_dataset(data, time_step = 1):
+    x, y = [], []
+    for i in range(len(data) - time_step, - 1):
+        x.append(data[i:(i + time_step), 0])
+        y.append(data[i + time_step, 0])
+    return array(x), array(y)
+
+def forest_data(data):
     #Multiply PER_TRUCKS by 100, then can convert to integer so that it can be fit with random forest.
     #This is the equivalent of having the data be cars per 1500 minutes. Correlations should still be useful as they're just comparing against each other?
     data['PER_TRUCKS'] = data['PER_TRUCKS'].apply(lambda x: int(x*100))
@@ -44,3 +53,18 @@ def prepare_data(data):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 1)
 
     return x_train, x_test, y_train, y_test
+
+def gru(data):
+    scalar = MinMaxScaler(feature_range = (0, 1))
+    scaled_data = scalar.fit_transform(data.values)
+
+    x, y = create_dataset(scaled_data)
+    x = x.reshape(x.shape[0], x.shape[1], 1)
+
+    return x, y
+
+
+def prepare_data(data, model = None):
+    if model.lower() == 'forest': return forest_data(data)
+
+    elif model.lower() == 'gru': return gru(data)
