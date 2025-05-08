@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from keras import Sequential
 from torch import lstm
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 def train_lstm(x_train, x_test, y_train, y_test):
@@ -11,6 +11,7 @@ def train_lstm(x_train, x_test, y_train, y_test):
 
 def train_RandomForest(x_train, x_test, y_train, y_test):
     clf = RandomForestClassifier()
+    
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 

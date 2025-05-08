@@ -7,6 +7,10 @@ def are_equal(column):
     return False#(array[0] == array).all()
 
 def prepare_data(data):
+    #Multiply PER_TRUCKS by 100, then can convert to integer so that it can be fit with random forest.
+    #This is the equivalent of having the data be cars per 1500 minutes. Correlations should still be useful as they're just comparing against each other?
+    data['PER_TRUCKS'] = data['PER_TRUCKS'].apply(lambda x: int(x*100))
+
     #remove constant columns
     for column in data.columns:
         if are_equal(data[column]):
