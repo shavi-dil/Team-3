@@ -12,7 +12,7 @@ if argv[1].lower() == 'forest':
     train_RandomForest(x_train, x_test, y_train, y_test)
 
 elif argv[1].lower() == 'gru':
-    x, y = prepare_data(data)
-    train_gru()
+    scaled_data = prepare_data(data)
+    train_gru(scaled_data)
 
 else: print("Usage, python main.py <model>")

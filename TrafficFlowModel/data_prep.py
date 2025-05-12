@@ -15,12 +15,8 @@ def create_dataset(data, time_step = 1):
         y.append(data[i + time_step, 0])
     return array(x), array(y)
 
-def forest_data(data):
-    #Multiply PER_TRUCKS by 100, then can convert to integer so that it can be fit with random forest.
-    #This is the equivalent of having the data be cars per 1500 minutes. Correlations should still be useful as they're just comparing against each other?
-    data['PER_TRUCKS'] = data['PER_TRUCKS'].apply(lambda x: int(x*100))
-
-    #remove constant columns
+def data_prep(data):
+     #remove constant columns
     for column in data.columns:
         if are_equal(data[column]):
             print("Removing ", data[column])
@@ -32,6 +28,16 @@ def forest_data(data):
         if row.DECLARED_R is None or row.LOCAL_ROAD is None or row.DECLARED_R == 'Missing Data':
             data = data.drop(count)
         count += 1
+
+    return data
+    
+
+def forest_data(data):
+    #Multiply PER_TRUCKS by 100, then can convert to integer so that it can be fit with random forest.
+    #This is the equivalent of having the data be cars per 1500 minutes. Correlations should still be useful as they're just comparing against each other?
+    data['PER_TRUCKS'] = data['PER_TRUCKS'].apply(lambda x: int(x*100))
+
+    data = data_prep(data)
 
     roads = data.LOCAL_ROAD.unique()
     dic = dict((a, b) for a, b in enumerate(roads))
@@ -55,13 +61,18 @@ def forest_data(data):
     return x_train, x_test, y_train, y_test
 
 def gru(data):
+    data = data_prep(data)
+
     scalar = MinMaxScaler(feature_range = (0, 1))
     scaled_data = scalar.fit_transform(data.values)
 
-    x, y = create_dataset(scaled_data)
-    x = x.reshape(x.shape[0], x.shape[1], 1)
+    forecast_start = 720
+    train, test = scaled_data[: forecast_start, :], scaled_data[forecast_start : 850, :]
 
-    return x, y
+    #x, y = create_dataset(scaled_data)
+    #x = x.reshape(x.shape[0], x.shape[1], 1)
+
+    return scaled_data
 
 
 def prepare_data(data, model = None):
