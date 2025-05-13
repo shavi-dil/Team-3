@@ -2,11 +2,12 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from numpy import array
+from math import isnan
 
 def are_equal(column):
     array = column.to_numpy()
 
-    return False#(array[0] == array).all()
+    return (array[0] == array).all()
 
 def create_dataset(data, time_step = 1):
     x, y = [], []
@@ -16,28 +17,28 @@ def create_dataset(data, time_step = 1):
     return array(x), array(y)
 
 def data_prep(data):
+    #Remove all the columns we're not training on
+    for column in data.columns.difference(['YEAR_SINCE', 'AADT_ALLVE', 'LOCAL_ROAD', 'DECLARED_R', 'PER_TRUCKS']):
+        data = data.drop(column, axis = 1)
+    
      #remove constant columns
     for column in data.columns:
         if are_equal(data[column]):
             print("Removing ", data[column])
             del data[column]
 
-    #Should also add a function to remove null values
+    #Check for None
     count = 0
     for row in data.itertuples():
         if row.DECLARED_R is None or row.LOCAL_ROAD is None or row.DECLARED_R == 'Missing Data':
             data = data.drop(count)
         count += 1
-
-    return data
-    
-
-def forest_data(data):
-    #Multiply PER_TRUCKS by 100, then can convert to integer so that it can be fit with random forest.
-    #This is the equivalent of having the data be cars per 1500 minutes. Correlations should still be useful as they're just comparing against each other?
-    data['PER_TRUCKS'] = data['PER_TRUCKS'].apply(lambda x: int(x*100))
-
-    data = data_prep(data)
+    #Check for NaN
+    count = 0
+    for row in data.itertuples():
+        if isnan(row.PER_TRUCKS):
+            data = data.drop([count])
+        count += 1
 
     roads = data.LOCAL_ROAD.unique()
     dic = dict((a, b) for a, b in enumerate(roads))
@@ -56,12 +57,22 @@ def forest_data(data):
     #x = lr
     y = data['PER_TRUCKS']
 
+    return data
+    
+
+def forest_data(data):
+    #Multiply PER_TRUCKS by 100, then can convert to integer so that it can be fit with random forest.
+    #This is the equivalent of having the data be cars per 1500 minutes. Correlations should still be useful as they're just comparing against each other?
+    data['PER_TRUCKS'] = data['PER_TRUCKS'].apply(lambda x: int(x*100))
+
+    data, x, y = data_prep(data)
+
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 1)
 
     return x_train, x_test, y_train, y_test
 
 def gru(data):
-    data = data_prep(data)
+    data, x, y = data_prep(data)
 
     scalar = MinMaxScaler(feature_range = (0, 1))
     scaled_data = scalar.fit_transform(data.values)
