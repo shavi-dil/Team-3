@@ -2,6 +2,7 @@ from torch import Tensor
 from torch.utils.data import TensorDataset, DataLoader
 from torch.nn import MSELoss
 from torch.optim import Adam
+import torch
 from numpy import array, reshape, resize
 from pandas import read_csv
 from GRUmodel import GRUMODEL
@@ -34,8 +35,9 @@ def train_model(train_data, input_size, hidden_size, output_size, learning_rate,
 
             optimizer.step()
 
-        if (epoch + 1) % 10 == 0:
-            print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
+        print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
+
+    return model
 
 def main():
     step_size = 5
@@ -70,6 +72,18 @@ def main():
     epochs = 10
     learning_rate = 0.0001
 
-    train_model(train_data, input_size, hidden_size, output_size, learning_rate, epochs)
+    model = train_model(train_data, input_size, hidden_size, output_size, learning_rate, epochs)
+
+    #Test
+    with torch.no_grad():
+        model.eval()
+        testPredict = model(x_test)
+
+    #Result visualisation
+    index = range(len(y_test))
+    plt.plot(index, y_test, label="Ground truth")
+    plt.plot(index, testPredict.numpy(), label="Predicted")
+    plt.legend()
+    plt.show()
 
 main()
