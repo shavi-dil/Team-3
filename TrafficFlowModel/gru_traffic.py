@@ -25,11 +25,12 @@ def train_model(train_data, input_size, hidden_size, output_size, learning_rate,
         model.train()
         for batch_x, batch_y in train_loader:
             optimizer.zero_grad()
+            
             output = model(batch_x)
 
             loss = criterion(output, batch_y)
 
-            loss.backwards()
+            loss.backward()
 
             optimizer.step()
 
@@ -44,16 +45,16 @@ def main():
     data = read_csv('Traffic_Count_Locations_with_LONG_LAT.csv')
     data = data_prep(data)
     values = data.values
-    print("Shape:")
-    print(data.shape)
 
     train, test = values[: forecast_start, :], values[forecast_start: N, :]
 
     x_train, y_train = create_labels(train, step_size)
     x_test, y_test = create_labels(test, step_size)
 
-    x_train = reshape(x_train, (x_train.shape[0], 1, x_train.shape[1]))
-    x_test = reshape(x_test, (x_test.shape[0], 1, x_test.shape[1]))
+    x_train = reshape(x_train, (x_train.shape[0] * 5, 1, x_train.shape[1]))
+    x_test = reshape(x_test, (x_test.shape[0] * 5, 1, x_test.shape[1]))
+    y_train = reshape(y_train, (y_train.shape[0] * 5, 1))
+    y_test = reshape(y_test, (y_test.shape[0] * 5, 1))
 
     x_train = Tensor(x_train.astype(float))
     y_train = Tensor(y_train.astype(float))
